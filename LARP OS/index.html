@@ -1,5 +1,329 @@
-<picture><source srcset="image.webp" type="image/webp"><img src="image.jpg" alt="Description of the image"></picture>
-see more
-<div id="piwnwr"></div>
-//Hello, this is a sample HTML code snippet that includes a picture element with a WebP image source and a fallback JPEG image. The "see more" text is included, followed by a div with the id "piwnwr".
-print("Hello, this is a sample HTML code snippet that includes a picture element with a WebP image source and a fallback JPEG image. The 'see more' text is included, followed by a div with the id 'piwnwr'.")
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LARP OS v1.0.8 // MATRIX CUBE PRO</title>
+    <style>
+        /* BASE SYSTEM STYLES */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000; color: #00ff00; }
+        
+        /* MATRIX RAIN BACKGROUND */
+        #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.3; pointer-events: none; }
+        
+        /* GLOWING CENTER 3D CUBE */
+        #center-cube-container {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            perspective: 800px; z-index: 1; pointer-events: none;
+        }
+        .css-cube {
+            width: 120px; height: 120px; transform-style: preserve-3d;
+            animation: spinCube 8s infinite linear;
+        }
+        .cube-face {
+            position: absolute; width: 120px; height: 120px;
+            border: 3px solid #00ff00; box-shadow: 0 0 25px #00ff00, inset 0 0 25px #00ff00;
+            background: rgba(0, 255, 0, 0.02);
+        }
+        .front  { transform: translateZ(60px); }
+        .back   { transform: rotateY(180deg) translateZ(60px); }
+        .right  { transform: rotateY(90deg) translateZ(60px); }
+        .left   { transform: rotateY(-90deg) translateZ(60px); }
+        .top    { transform: rotateX(90deg) translateZ(60px); }
+        .bottom { transform: rotateX(-90deg) translateZ(60px); }
+        
+        @keyframes spinCube {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+        }
+
+        /* TOP BAR */
+        #top-bar { position: fixed; top: 0; left: 0; width: 100%; height: 25px; background: #000; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; z-index: 1000; font-weight: bold; border-bottom: 1px solid #004400; font-size: 14px; }
+        
+        /* DESKTOP LEFT ICONS */
+        #desktop-icons { position: absolute; top: 40px; left: 10px; z-index: 5; display: flex; flex-direction: column; gap: 20px; }
+        .desktop-shortcut { width: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; }
+        .desktop-shortcut:hover .shortcut-icon { background: rgba(0, 255, 0, 0.2); }
+        .shortcut-icon { font-size: 32px; margin-bottom: 5px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 5px; transition: 0.2s; }
+        .shortcut-label { font-size: 11px; font-weight: bold; color: #00ff00; }
+        
+        /* TASKBAR DOCK */
+        #dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 50px; background: #000; border-top: 1px solid #00ff00; z-index: 2000; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .dock-icon { width: 35px; height: 35px; border: 1px solid #00ff00; border-radius: 3px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #001100; font-size: 20px; transition: 0.2s; }
+        .dock-icon:hover { background: #00ff00; color: black; transform: scale(1.1); }
+
+        /* WINDOW SYSTEM */
+        .window { position: absolute; background: #000; border: 2px solid #00ff00; box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); display: flex; flex-direction: column; z-index: 10; min-width: 250px; }
+        .window-header { background: #001100; padding: 4px 8px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ff00; cursor: move; user-select: none; font-weight: bold; font-size: 14px; }
+        .window-controls { display: flex; gap: 4px; }
+        .win-btn { width: 18px; height: 18px; border: 1px solid #00ff00; background: #000; color: #00ff00; font-family: monospace; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .win-btn:hover { background: #00ff00; color: black; }
+        .window-body { flex-grow: 1; padding: 12px; overflow: auto; font-size: 12px; position: relative; color: #00ff00; }
+        
+        /* APP SPECIFIC */
+        ul.file-list { list-style: none; line-height: 1.8; }
+        ul.file-list li::before { content: "📄 "; }
+        ul.file-list li:nth-child(2)::before { content: "⚙️ "; }
+        ul.file-list li:nth-child(3)::before { content: "🖼️ "; }
+        
+        .terminal-text { color: #00ff00; line-height: 1.5; }
+        
+        /* CYBER PAINT */
+        .paint-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; padding: 5px; border: 1px solid #00ff00; background: #001100; font-size: 10px; }
+        #paint-canvas { background: white; cursor: crosshair; display: block; border: 1px solid #00ff00; }
+        .tool-btn { background: black; color: #00ff00; border: 1px solid #00ff00; padding: 2px 6px; cursor: pointer; font-size: 10px; }
+        .tool-btn:hover { background: #00ff00; color: black; }
+        input[type="color"] { background: black; border: 1px solid #00ff00; height: 20px; width: 30px; padding: 0; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-bg"></canvas>
+
+    <div id="center-cube-container">
+        <div class="css-cube">
+            <div class="cube-face front"></div>
+            <div class="cube-face back"></div>
+            <div class="cube-face right"></div>
+            <div class="cube-face left"></div>
+            <div class="cube-face top"></div>
+            <div class="cube-face bottom"></div>
+        </div>
+    </div>
+
+    <div id="top-bar">
+        <div style="color: #ff5500;">⚡ <span style="color:#00ff00;">LARP_OS // KERNEL CORE REBUILT v1.0.8</span></div>
+        <div id="system-clock">11:20:03 PM</div>
+    </div>
+
+    <div id="desktop-icons">
+        <div class="desktop-shortcut" onclick="openWindow('win-explorer')">
+            <div class="shortcut-icon">📁</div><div class="shortcut-label">Files</div>
+        </div>
+        <div class="desktop-shortcut" onclick="openWindow('win-sysfetch')">
+            <div class="shortcut-icon">⚙️</div><div class="shortcut-label">Sys Fetch</div>
+        </div>
+        <div class="desktop-shortcut" onclick="openWindow('win-terminal')">
+            <div class="shortcut-icon">📟</div><div class="shortcut-label">Terminal</div>
+        </div>
+        <div class="desktop-shortcut" onclick="openWindow('win-paint')">
+            <div class="shortcut-icon">🎨</div><div class="shortcut-label">Cyber Paint</div>
+        </div>
+    </div>
+
+    <div id="win-explorer" class="window" style="top: 60px; left: 160px; width: 320px; height: 220px;">
+        <div class="window-header">
+            <div>📁 File Explorer</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minWindow('win-explorer')">_</button>
+                <button class="win-btn">[]</button>
+                <button class="win-btn" onclick="closeWindow('win-explorer')">x</button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="color: #00cc00; margin-bottom: 10px; font-weight: bold;">root/downloads/usr/</div>
+            <ul class="file-list">
+                <li>system_fetch.sys</li>
+                <li>config.cfg</li>
+                <li>artwork_manifest.dat</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="win-sysfetch" class="window" style="top: 60px; right: 50px; width: 350px; height: 300px;">
+        <div class="window-header">
+            <div>⚙️ system_fetch.sys</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minWindow('win-sysfetch')">_</button>
+                <button class="win-btn">[]</button>
+                <button class="win-btn" onclick="closeWindow('win-sysfetch')">x</button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="cube.gif" onerror="this.src='cube.jpg'" alt="System Cube" style="max-width: 120px; border: 1px solid #00ff00; box-shadow: 0 0 10px #00ff00;">
+            </div>
+            
+            <pre style="color: #00ff00; font-size: 11px;">
+SYSTEM PROFILE READOUT
+---------------------------
+OS: LARP Linux x86_64 Core
+Kernel: 6.11.0-HACK-CLUB-PRO
+Shell: custom-bash-v5
+            </pre>
+        </div>
+    </div>
+
+    <div id="win-terminal" class="window" style="top: 500px; left: 110px; width: 400px; height: 200px;">
+        <div class="window-header">
+            <div>📟 root@larp_os:~</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minWindow('win-terminal')">_</button>
+                <button class="win-btn">[]</button>
+                <button class="win-btn" onclick="closeWindow('win-terminal')">x</button>
+            </div>
+        </div>
+        <div class="window-body terminal-text">
+            [INIT] LARP OS Engine Assembly Online...<br>
+            [SYS] Core systems checking matrix pipelines... OK.<br>
+            [SYS] 3D Vector Matrix Geometry Engine loaded... OK.<br>
+            larp_os]# <span style="color: #00ffff;">Ready for paint inputs.</span><br><br>
+            [SYS] Window context [win-paint] minimized.<br>
+            [SYS] Window context [win-sysfetch] minimized.<br>
+            [SYS] Window context [win-terminal] minimized.<br>
+            [SYS] Window context [win-explorer] minimized.<br>
+            [SYS] Window context [win-sysfetch] minimized.<br>
+            [SYS] Window context [win-terminal] minimized.<br>
+        </div>
+    </div>
+
+    <div id="win-paint" class="window" style="top: 400px; right: 50px; width: 500px; height: 350px;">
+        <div class="window-header">
+            <div>🎨 Cyber Paint Pro</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minWindow('win-paint')">_</button>
+                <button class="win-btn">[]</button>
+                <button class="win-btn" onclick="closeWindow('win-paint')">x</button>
+            </div>
+        </div>
+        <div class="window-body" style="display: flex; flex-direction: column; padding: 8px;">
+            <div class="paint-toolbar">
+                <label>COLOR:</label>
+                <input type="color" id="paint-color" value="#00ff00">
+                <label style="margin-left: 10px;">SIZE:</label>
+                <input type="range" id="paint-size" min="1" max="20" value="5" style="width: 80px;">
+                <button class="tool-btn" id="btn-clear" style="margin-left: auto;">Clear Screen</button>
+                <button class="tool-btn">Save to Disk</button>
+            </div>
+            <canvas id="paint-canvas" width="480" height="260"></canvas>
+        </div>
+    </div>
+
+    <div id="dock">
+        <div class="dock-icon" onclick="openWindow('win-explorer')">📁</div>
+        <div class="dock-icon" onclick="openWindow('win-sysfetch')">⚙️</div>
+        <div class="dock-icon" onclick="openWindow('win-terminal')">📟</div>
+        <div class="dock-icon" onclick="openWindow('win-paint')">🎨</div>
+    </div>
+
+    <script>
+        // --- 1. WINDOW MANAGEMENT ---
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            win.style.display = "flex";
+            bringToFront(win);
+        }
+        function closeWindow(id) {
+            document.getElementById(id).style.display = "none";
+        }
+        function minWindow(id) {
+            // Treat minimize like close for this basic UI
+            document.getElementById(id).style.display = "none";
+        }
+        function bringToFront(el) {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            el.style.zIndex = "100";
+        }
+
+        // Draggable Windows
+        document.querySelectorAll('.window').forEach(win => {
+            const header = win.querySelector('.window-header');
+            let isDragging = false, startX, startY;
+            
+            win.addEventListener('mousedown', () => bringToFront(win));
+            
+            header.addEventListener('mousedown', e => {
+                if(e.target.tagName === 'BUTTON') return;
+                isDragging = true;
+                startX = e.clientX - win.offsetLeft;
+                startY = e.clientY - win.offsetTop;
+            });
+            document.addEventListener('mousemove', e => {
+                if(!isDragging) return;
+                win.style.left = (e.clientX - startX) + 'px';
+                win.style.top = (e.clientY - startY) + 'px';
+            });
+            document.addEventListener('mouseup', () => isDragging = false);
+        });
+
+        // Live Clock
+        setInterval(() => {
+            document.getElementById('system-clock').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // --- 2. CYBER PAINT LOGIC ---
+        const paintCanvas = document.getElementById('paint-canvas');
+        const ctx = paintCanvas.getContext('2d');
+        const colorPicker = document.getElementById('paint-color');
+        const sizePicker = document.getElementById('paint-size');
+        const clearBtn = document.getElementById('btn-clear');
+        
+        let isDrawing = false;
+
+        // Init white background
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, paintCanvas.width, paintCanvas.height);
+
+        paintCanvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+        paintCanvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = colorPicker.value;
+            ctx.lineWidth = sizePicker.value;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+        });
+        paintCanvas.addEventListener('mouseup', () => isDrawing = false);
+        paintCanvas.addEventListener('mouseout', () => isDrawing = false);
+
+        clearBtn.addEventListener('click', () => {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, paintCanvas.width, paintCanvas.height);
+        });
+
+        // --- 3. MATRIX RAIN BACKGROUND ---
+        const mCanvas = document.getElementById('matrix-bg');
+        const mCtx = mCanvas.getContext('2d');
+        
+        mCanvas.width = window.innerWidth;
+        mCanvas.height = window.innerHeight;
+        
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+        const matrix = letters.split("");
+        const fontSize = 14;
+        const columns = mCanvas.width / fontSize;
+        const drops = [];
+        
+        for(let x = 0; x < columns; x++) drops[x] = 1; 
+
+        function drawMatrix() {
+            mCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+            
+            mCtx.fillStyle = "#00ff00"; 
+            mCtx.font = fontSize + "px monospace";
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > mCanvas.height && Math.random() > 0.975)
+                    drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            mCanvas.width = window.innerWidth;
+            mCanvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
